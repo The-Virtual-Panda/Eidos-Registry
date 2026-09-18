@@ -1,0 +1,26 @@
+# A merge to main is the moment of publication: the site rebuilds from the
+# Registry through its Cloudflare Pages deploy hook. The hook's URL is the
+# repository secret CLOUDFLARE_DEPLOY_HOOK and lives nowhere else; until it
+# is set this workflow does nothing.
+name: Deploy hook
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/**'
+      - 'categories.yaml'
+
+jobs:
+  call:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the site's deploy hook
+        env:
+          HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "CLOUDFLARE_DEPLOY_HOOK is not set; nothing to call"
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK" -o /dev/null

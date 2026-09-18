@@ -1,0 +1,63 @@
+# A pull request that touches only packages/<owner>/ merges on its own when
+# the author is <owner> (or a public member of that organization) and the
+# checks pass. Anything else, categories.yaml above all, waits for the
+# Registry's owner.
+name: Auto-merge
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+  check_suite:
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find the pull request
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request_target" ]; then
+            number=${{ github.event.pull_request.number }}
+          else
+            number=$(gh api "repos/${{ github.repository }}/commits/${{ github.event.check_suite.head_sha }}/pulls" --jq '.[0].number // empty')
+          fi
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      - name: Decide
+        if: steps.pr.outputs.number != ''
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ steps.pr.outputs.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          author=$(gh pr view "$NUMBER" --repo "$REPO" --json author --jq .author.login)
+          files=$(gh pr view "$NUMBER" --repo "$REPO" --json files --jq '.files[].path')
+          owners=$(echo "$files" | sed -n 's#^packages/\([^/]*\)/[^/]*\.yaml$#\1#p' | sort -u)
+          outside=$(echo "$files" | grep -v '^packages/[^/]*/[^/]*\.yaml$' || true)
+          if [ -n "$outside" ] || [ "$(echo "$owners" | wc -l)" -ne 1 ] || [ -z "$owners" ]; then
+            echo "waits for the owner: touches more than one owner's folder, or files outside packages/"
+            echo "merge=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          owner=$(echo "$owners" | tr -d '[:space:]')
+          if [ "$(echo "$author" | tr '[:upper:]' '[:lower:]')" = "$(echo "$owner" | tr '[:upper:]' '[:lower:]')" ]; then
+            echo "merge=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if gh api "orgs/$owner/public_members/$author" --silent 2>/dev/null; then
+            echo "merge=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "waits for the owner: $author is not $owner or a public member of it"
+          echo "merge=false" >> "$GITHUB_OUTPUT"
+
+      - name: Merge when the checks pass
+        if: steps.decide.outputs.merge == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr merge "${{ steps.pr.outputs.number }}" --repo "${{ github.repository }}" --auto --squash

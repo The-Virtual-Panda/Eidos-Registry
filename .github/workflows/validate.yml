@@ -1,0 +1,83 @@
+# Every pull request: each changed manifest is checked against the contract
+# (scripts/validate.mjs, with categories.yaml as changed in this pull
+# request), then its source is fetched at `ref` and `eidos check` runs on the
+# root at `path`. A root that fails the standard never merges.
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - 'packages/**'
+      - 'categories.yaml'
+      - 'scripts/**'
+      - '.github/workflows/validate.yml'
+  push:
+    branches: [main]
+
+env:
+  # The CLI release the Registry validates against. Move it on purpose.
+  EIDOSMD_VERSION: '0.2.0'
+
+jobs:
+  manifests:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.validate.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+
+      - name: Changed manifests
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            files=$(git diff --name-only --diff-filter=AM "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- 'packages/**/*.yaml')
+          else
+            files=$(git ls-files 'packages/**/*.yaml')
+          fi
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$files" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Validate manifests
+        id: validate
+        run: |
+          # Every manifest is validated against categories.yaml as it stands
+          # here; only the changed ones go on to be fetched and checked.
+          node scripts/validate.mjs
+          changed=$(echo "${{ steps.changed.outputs.files }}" | sed '/^$/d')
+          if [ -z "$changed" ]; then
+            echo 'packages=[]' >> "$GITHUB_OUTPUT"
+          else
+            echo "packages=$(node scripts/validate.mjs --json $changed 2>/dev/null)" >> "$GITHUB_OUTPUT"
+          fi
+
+  roots:
+    needs: manifests
+    if: needs.manifests.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.manifests.outputs.packages) }}
+    name: check ${{ matrix.package.package }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch ${{ matrix.package.repo }} at ${{ matrix.package.ref }}
+        run: |
+          git clone --quiet --depth 1 --branch "${{ matrix.package.ref }}" \
+            "https://github.com/${{ matrix.package.repo }}.git" source \
+            || { echo "::error::could not fetch ${{ matrix.package.repo }} at ${{ matrix.package.ref }}"; exit 1; }
+          test -f "source/${{ matrix.package.path }}/.eidos/Framework.yaml" \
+            || { echo "::error::no .eidos/Framework.yaml under ${{ matrix.package.path }} in ${{ matrix.package.repo }} at ${{ matrix.package.ref }}"; exit 1; }
+
+      - name: eidos check
+        run: npx -y "eidosmd@${EIDOSMD_VERSION}" check --root "source/${{ matrix.package.path }}"

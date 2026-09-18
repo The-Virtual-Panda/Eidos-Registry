@@ -1,0 +1,19 @@
+# The categories a package may declare, one value with one line of meaning.
+# A pull request may add a category in the same change that uses it; CI
+# validates against this file as it stands in that pull request, and a pull
+# request that touches this file always waits for the Registry's owner.
+categories:
+  - name: software
+    meaning: a product, service, or system being built
+  - name: book
+    meaning: a book, long-form argument, or other written work
+  - name: research
+    meaning: a question, a study, or a programme of inquiry
+  - name: course
+    meaning: a course, curriculum, or programme of instruction
+  - name: game
+    meaning: a game, its world, its rules, and its play
+  - name: organization
+    meaning: a company, team, community, or institution and how it runs
+  - name: fixture
+    meaning: a root that exists to prove tooling, not to be installed

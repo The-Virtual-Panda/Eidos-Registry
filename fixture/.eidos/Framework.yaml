@@ -1,0 +1,152 @@
+# The framework document: the structure this root is written in, in one place. The version and naming
+# convention, the top-level documents, the collections (with their variants and grouping), the Properties
+# table, the Vocabulary, and, once blueprints exist, the generated index. The visible
+# README.md at the root is the friendly door to it; keep it current with the `eidos` CLI.
+
+# The Eidos version this framework targets; migrate reads and bumps it.
+eidos_version: 5.0.0
+
+# How files, folders, and links are named: kebab-case | TitleCase | Title Case. Absent = kebab-case. It
+# governs the whole root and changing it later means renaming files, so it is settled at install.
+naming: kebab-case
+
+# The top-level documents, README first: one entry per one-of-a-kind doc (a Vision, a set of Design
+# Principles, the generated Blueprint Map), each a title, a path from this folder, and a one-line
+# description. The framing docs live in the framing collection, not here. The `eidos` CLI refreshes
+# this list.
+top_level:
+  - title: README
+    path: ../README.md
+    description: "the root's front door: what this is, and pointers in."
+
+# A collection is a top-level folder of repeated blueprints that share a body template. frames holds
+# the framing docs, what the root says first about the product, and specs the product's units. Add
+# more with the `eidos` CLI. Each declares its variants (one default; each a template file named
+# <unit>.<variant>.md under templates/, the unit being the word for one of its blueprints) and its grouping.
+collections:
+  # This framework's framing collection: the docs that set what every other blueprint is judged
+  # against. Each frame follows the variant of its kind, and one left unwritten is a gap to surface,
+  # not a failure.
+  - name: frames
+    description: "The framing docs that set what every other blueprint is judged against — the product's architecture, audience, criteria, and market."
+    variants:
+      - { name: architecture, template: templates/frame.architecture.md, description: "the product as a built system", default: true }
+      - { name: audience, template: templates/frame.audience.md, description: "who it serves, and how each kind differs" }
+      - { name: criteria, template: templates/frame.criteria.md, description: "budget, scope objectives, timeline" }
+      - { name: market, template: templates/frame.market.md, description: "landscape, positioning, and how it earns" }
+  - name: specs
+    description: "The product's units, one per blueprint, grouped by domain."
+    variants:
+      - { name: full, template: templates/spec.full.md, description: "the complete spec template", default: true }
+      - { name: micro, template: templates/spec.micro.md, description: "Intent, Open Questions, ACs, Out of Scope; grow into full" }
+    grouping:
+      label: Domains
+      property: domain
+      # One entry per domain, a name and a short description, as they accrue.
+      groups:
+        - name: example
+          description: "one example group, so the fixture has a grouped collection"
+
+# The property contract: what a blueprint's frontmatter may carry, across every collection. One block
+# per owner: the core properties Eidos's own machinery uses, the custom ones you (or the seed) add, and
+# a tools.<tool> block for any tool that declares properties of its own (none ship with a seed). Every
+# custom property declares which collections it applies to, `all` or a list, so a property never lands
+# where it makes no sense (domain is specs-only). A type comes from the Obsidian set (Text, List,
+# Number, Checkbox, Date, Date & time), so frontmatter renders natively in a vault. The `eidos` CLI
+# edits the custom block.
+properties:
+  # Present on every blueprint. Managed by the standard (Eidos 5.0.0); migrate rewrites this block on a
+  # version change, so don't hand-edit it. variant absent = the collection's default; a missing summary
+  # is flagged by the index.
+  core:
+    - { name: id, type: Text, meaning: "Stable, unique identity, in any form: a slug, a number, a GUID. Assigned once, never changed. References point at it." }
+    - { name: title, type: Text, meaning: "Human-readable name." }
+    - { name: summary, type: Text, meaning: "One plain line: what this blueprint is, in a sentence, distilled from Intent. Source for the collection's index listing; absent, the index flags it." }
+    - { name: variant, type: Text, meaning: "Which body variant this blueprint follows, from its collection's declared variants. Absent = the collection's default." }
+  # Yours to shape with the `eidos` CLI. The seed ships a few useful defaults; keep, scope, or drop any of
+  # them, Eidos doesn't depend on them. Absence where a property applies is a soft gap a check notes,
+  # never refuses.
+  custom:
+    - name: status
+      type: Text
+      applies_to: all
+      meaning: "Lifecycle value: Draft / Intake / In Progress / Done / Archived / Deprecated. An off-list value warns."
+      eidosmd:
+        canvas:
+          show: true
+          styles:
+            Draft:
+              color: "#8b9099"
+            Intake:
+              color: "#d3a53c"
+            In Progress:
+              color: "#5f80cf"
+            Done:
+              color: "#7fae6c"
+            Archived:
+              color: "#8b9099"
+            Deprecated:
+              color: "#cf7b8f"
+            needs-clarification:
+              color: "#5f80cf"
+            maybe:
+              color: "#e08a63"
+            visionary:
+              color: "#4aa39f"
+    - { name: date_created, type: Date, applies_to: all, meaning: "YYYY-MM-DD. The day the blueprint was first written. Set once." }
+    - { name: date_modified, type: Date, applies_to: all, meaning: "YYYY-MM-DD. The day the blueprint was last changed." }
+    - { name: tags, type: List, applies_to: all, meaning: "Free tags." }
+    - { name: domain, type: Text, applies_to: [ specs ], meaning: "The grouping, matching the blueprint's sub-folder under its collection in the naming convention. An unknown value warns, never fails." }
+    - { name: depends_on, type: List, applies_to: [ specs ], meaning: "Blueprints this one needs, each a markdown link. An implementation dependency." }
+    - name: type
+      type: Text
+      applies_to: [ specs ]
+      meaning: "Open, soft category label: drives views and filtering, never structure. e.g. feature, capability, integration."
+      eidosmd:
+        canvas:
+          show: true
+          styles:
+            page:
+              shape: pill
+            feature:
+              shape: box
+            capability:
+              shape: box
+            integration:
+              shape: box
+            background:
+              shape: box
+            module:
+              shape: box
+            decision:
+              shape: parallelogram
+            note:
+              shape: box
+
+# The term contract: the words this root uses on purpose, so a distinction made once is not lost later.
+# One entry per term: what it means, and what it is not (the near-misses, each with why it is a different
+# thing); `see` points at the blueprint that defines the term in full. Eidos declares none of these; the
+# list starts empty and grows an entry when a word begins to carry a distinction worth keeping.
+# The `eidos` CLI edits it and presses for all three of term, means, and not.
+vocabulary: []
+
+# Generated by `eidos index`; never hand-edited. One list per collection, in the order the markdown index would use.
+index:
+  frames:
+    - id: architecture
+      title: Architecture
+      summary: A fixture frame; the Registry publishes this root only to prove its own checks.
+      path: architecture.md
+    - id: audience
+      title: Audience
+      summary: A fixture frame; the Registry publishes this root only to prove its own checks.
+      path: audience.md
+    - id: criteria
+      title: Criteria
+      summary: A fixture frame; the Registry publishes this root only to prove its own checks.
+      path: criteria.md
+    - id: market
+      title: Market
+      summary: A fixture frame; the Registry publishes this root only to prove its own checks.
+      path: market.md
+  specs: []
