@@ -1,0 +1,6 @@
+repo: BuildableWorks/Eidos
+path: seeds/software
+ref: v5.3.1
+description: The software seed the standard ships, for a product, service, or system being built; frames for architecture, audience, criteria, and market, and specs grouped by domain.
+category: software
+keywords: [seed, software, product, specs, frames]
