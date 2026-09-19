@@ -24,7 +24,11 @@ function walk(dir) {
   });
 }
 
-const categories = new Set((parse(readFileSync('categories.yaml', 'utf8'))?.categories ?? []).map((c) => c.name));
+// A parent alone is a valid category (a general root, such as a seed), as is
+// any `parent/child` it declares.
+const categories = new Set(
+  (parse(readFileSync('categories.yaml', 'utf8'))?.categories ?? []).flatMap((c) => [c.name, ...(c.children ?? []).map((child) => `${c.name}/${child.name}`)]),
+);
 const files = given.length > 0 ? given : walk('packages');
 
 let failed = false;

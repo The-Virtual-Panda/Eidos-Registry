@@ -2,5 +2,5 @@ repo: BuildableWorks/Eidos
 path: seeds/book
 ref: v5.3.1
 description: The book seed the standard ships, for a book, long-form argument, or course; frames for premise, reader, voice, and market, and chapters grouped by part.
-category: book
+category: media/book
 keywords: [seed, book, chapters, writing]

@@ -1,19 +1,97 @@
-# The categories a package may declare, one value with one line of meaning.
+# The categories a package may declare, in two levels: a parent names a family
+# of things, a child names one kind within it, each with one line of meaning. A
+# manifest declares `parent/child`, or `parent` alone when the root is general
+# or no child fits (a seed for any software is `software`; a video game is
+# `software/game`; a chair is `goods`). A category names the kind of thing the
+# root defines, never who makes it or what industry it is in; a cookbook is
+# `media/book`, a restaurant concept is `business/service`, and the
+# restaurant's build-out is `building/renovation`. Keywords carry the rest.
+#
 # A pull request may add a category in the same change that uses it; CI
 # validates against this file as it stands in that pull request, and a pull
 # request that touches this file always waits for the Registry's owner.
 categories:
   - name: software
-    meaning: a product, service, or system being built
-  - name: book
-    meaning: a book, long-form argument, or other written work
-  - name: research
-    meaning: a question, a study, or a programme of inquiry
-  - name: course
-    meaning: a course, curriculum, or programme of instruction
-  - name: game
-    meaning: a game, its world, its rules, and its play
-  - name: organization
-    meaning: a company, team, community, or institution and how it runs
+    meaning: anything that runs on a computer
+    children:
+      - name: app
+        meaning: an application, platform, API, or service being built
+      - name: game
+        meaning: a video game, its world, its rules, and its play
+      - name: agent
+        meaning: an AI agent or assistant, its purpose, its tools, its skills, and its guardrails
+      - name: data
+        meaning: a dataset, schema, ontology, or knowledge base, its sources and its entities
+
+  - name: media
+    meaning: anything made to be read, watched, or heard
+    children:
+      - name: book
+        meaning: a book, long-form argument, or other written work
+      - name: film
+        meaning: a film, documentary, or screenplay, its acts and its scenes
+      - name: music
+        meaning: an album, a score, a set, or a musical, its movements and its tracks
+      - name: channel
+        meaning: a video channel, podcast, or stream, its formats, its series, and its episodes
+      - name: publication
+        meaning: a newsletter, magazine, blog, or other periodical, its sections and its issues
+      - name: world
+        meaning: a fictional setting, its places, peoples, history, and rules, shared by the works set in it
+
+  - name: building
+    meaning: anything built on a site
+    children:
+      - name: house
+        meaning: a house, new or rebuilt, its site, its brief, and its rooms
+      - name: renovation
+        meaning: a remodel, addition, or fit-out, its brief, its budget, and the work by room, system, or phase
+      - name: interior
+        meaning: a room or an interior, its layout, its finishes, and its furnishings
+      - name: landscape
+        meaning: a garden, yard, or grounds, its plan and its plantings
+
+  - name: goods
+    meaning: anything manufactured to be held or sold
+    children:
+      - name: hardware
+        meaning: a device, machine, or electronic product, its parts and its assemblies
+      - name: apparel
+        meaning: a garment, collection, or line, its materials and its pieces
+      - name: tabletop
+        meaning: a board game, card game, or tabletop RPG, its components, its rules, and its play
+
+  - name: experience
+    meaning: anything people attend or undertake in person
+    children:
+      - name: event
+        meaning: a conference, festival, wedding, or launch, its programme, its people, and its logistics
+      - name: stage
+        meaning: a play, a concert, a tour, or a live production, its acts and its numbers
+      - name: journey
+        meaning: a trip, tour, or expedition, its legs, its stops, and its logistics
+
+  - name: knowledge
+    meaning: anything that finds out or teaches
+    children:
+      - name: research
+        meaning: a question, a study, or a programme of inquiry
+      - name: course
+        meaning: a course, curriculum, or programme of instruction
+      - name: method
+        meaning: a methodology, playbook, protocol, or standard, a way of working and its practices
+
+  - name: business
+    meaning: an enterprise, how it runs, how it is known, and how it reaches people
+    children:
+      - name: organization
+        meaning: a company, team, community, or institution and how it runs
+      - name: brand
+        meaning: an identity, its positioning, its voice, and its visual system
+      - name: campaign
+        meaning: a marketing, fundraising, or political campaign, its message, its channels, and its pieces
+      - name: service
+        meaning: a service or experience sold to customers, its offer, its journey, and its touchpoints
+
   - name: fixture
     meaning: a root that exists to prove tooling, not to be installed

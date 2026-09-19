@@ -13,7 +13,7 @@ repo: The-Virtual-Panda/Eidos-Registry   # the GitHub repository the root lives 
 path: fixture                            # the root folder inside it; `.` when the repository is the root
 ref: fixture/v0.1.0                      # the git tag the published state is read at
 description: One line on what this framework is for.
-category: fixture                        # one value from categories.yaml
+category: fixture                        # `parent` or `parent/child` from categories.yaml
 keywords: [fixture, ci]                  # optional
 ```
 
@@ -25,7 +25,7 @@ keywords: [fixture, ci]                  # optional
 
 ## Categories
 
-[`categories.yaml`](categories.yaml) is the list a manifest's `category` draws from, one line of meaning each. A pull request may add a category in the same change that uses it; CI validates against the list as changed, and that pull request waits for the Registry's owner.
+[`categories.yaml`](categories.yaml) is the tree a manifest's `category` draws from, one line of meaning each: a parent names a family of things (`software`, `media`, `building`), a child names one kind within it (`software/game`, `media/book`). A manifest declares `parent/child`, or `parent` alone when the root is general, as a seed is, or when no child fits. A category names the kind of thing the root defines, never who makes it; keywords carry the rest. A pull request may add a category in the same change that uses it; CI validates against the tree as changed, and that pull request waits for the Registry's owner.
 
 ## Publishing
 
