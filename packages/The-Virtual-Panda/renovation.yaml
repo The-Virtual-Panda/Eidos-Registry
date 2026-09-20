@@ -1,0 +1,6 @@
+repo: The-Virtual-Panda/Eidos-Examples
+path: renovation
+ref: renovation/v0.1.0
+description: A house renovation, room by room; frames for brief, site, criteria, and code, rooms grouped by floor, packages grouped by phase, and selections grouped by room.
+category: building/renovation
+keywords: [remodel, renovation, house, contractor, home]
