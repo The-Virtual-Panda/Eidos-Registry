@@ -16,7 +16,7 @@ on:
 
 env:
   # The CLI release the Registry validates against. Move it on purpose.
-  EIDOSMD_VERSION: '0.4.0'
+  EIDOSMD_VERSION: '0.5.0'
 
 jobs:
   manifests:
