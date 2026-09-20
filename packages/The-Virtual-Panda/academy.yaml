@@ -1,6 +1,6 @@
 repo: The-Virtual-Panda/Eidos-Examples
 path: academy
-ref: academy/v0.1.0
-description: A school of courses, learner first; frames for mission, pedagogy, market, and criteria, learner personas, courses grouped by track, and paths.
+ref: academy/v0.2.0
+description: A school of courses, learner first; The School (mission, how we teach, market, production), learner personas, courses grouped by track, paths, and a catalog.
 category: knowledge/course
 keywords: [courses, curriculum, learners, instructor]
