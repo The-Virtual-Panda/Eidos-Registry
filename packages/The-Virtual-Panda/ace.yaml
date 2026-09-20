@@ -1,6 +1,6 @@
 repo: The-Virtual-Panda/Eidos-Examples
 path: ace
-ref: ace/v0.2.0
+ref: ace/v0.3.0
 description: An Obsidian vault in the ACE shape (Atlas, Calendar, Efforts) with an Eidos framework under it; a flat atlas with maps, calendar entries grouped by series, efforts with heat as status, and a home page.
 category: knowledge
 keywords: [obsidian, ace, atlas, calendar, efforts, second-brain]
