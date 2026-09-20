@@ -1,6 +1,6 @@
 repo: BuildableWorks/Eidos
 path: seeds/research
-ref: v5.3.1
+ref: v5.4.0
 description: The research seed the standard ships, for a question, a study, or a programme of inquiry; frames for question, prior work, method, and ethics, and investigations grouped by strand.
 category: knowledge/research
 keywords: [seed, research, study, investigations]

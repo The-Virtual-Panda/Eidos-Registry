@@ -1,6 +1,6 @@
 repo: The-Virtual-Panda/Eidos-Examples
 path: world
-ref: world/v0.1.0
-description: A fictional world for a table or a series; frames for premise, tone, laws, and table, places grouped by region, factions, characters, arcs grouped by campaign, and a player role that sees only what is revealed.
+ref: world/v0.2.0
+description: A fictional world for a table or a series; The World (premise, tone, how it works, the table), places grouped by region, factions, characters, arcs grouped by campaign, a history, a player's guide, and a player role that sees only what is revealed.
 category: media/world
 keywords: [worldbuilding, ttrpg, campaign, game-master, obsidian]
