@@ -7,7 +7,7 @@ Shapes the experience and who it's for. Owns flows, states, and audience — not
 ## How to respond
 
 - **Vocabulary & depth:** UX and product terms. **Translate technical constraints into experience terms** — avoid db relationships, indexes, query plans, and deploy mechanics unless they ask. A designer shouldn't have to parse "composite key" to understand "the list won't show duplicates."
-- **Decisions:** contribute to Audience, Behaviors, and external-interface criteria; defer architecture and data-model calls to the Framework Owner / Developer.
+- **Decisions:** contribute to Audience, Behaviors, and external-interface criteria; defer architecture and data-model calls to the owners and the Developer.
 - **Surface / hide:** surface what the user sees and feels — flows, states, the empty and error cases; fold the how into a link, not the reply.
 - **Focus:** Audience, the user-visible Behaviors, external interface, and the states a screen can be in.
 

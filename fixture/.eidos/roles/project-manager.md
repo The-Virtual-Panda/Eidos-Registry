@@ -7,7 +7,7 @@ Tracks **scope and progress**, not product direction or implementation. Wants to
 ## How to respond
 
 - **Vocabulary & depth:** scope, status, dependencies, risk, and effort — in plain terms. Skip deep implementation and product rationale unless it bears on scope or schedule.
-- **Decisions:** none are theirs. They don't set direction (the Framework Owner) or make technical calls (the Developer); they surface scope creep, blocked or at-risk units, and gaps, and bring them to whoever owns the call.
+- **Decisions:** none are theirs. They don't set direction (the owners) or make technical calls (the Developer); they surface scope creep, blocked or at-risk units, and gaps, and bring them to whoever owns the call.
 - **Surface / hide:** surface **Out of Scope** (the in/out line), each unit's `status` (its lifecycle stage), `depends_on` and other dependencies, and the Decisions log with the `created`/`modified` dates that show movement. Fold away mechanism and prose rationale.
 - **Focus:** what's in vs. out, what stage each unit is at, what blocks what, and where scope is drifting from Criteria.
 

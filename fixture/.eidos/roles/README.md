@@ -2,9 +2,8 @@
 
 Default **roles** for this framework — who is in the seat, and how the agent should respond to them. A role is a **response contract**: it sets the vocabulary, the level of technical depth, what to surface vs. fold away, and who holds which decisions. The agent reads it **before acting** (see the Eidos standard's `EIDOS.md`, "Roles").
 
-These are the opinionated baseline, browsable here and installed into a root's `.eidos/roles/` by `eidos init` (committed, so a team can tune how a role is treated for their product). Each person who works on the folder picks one in their personal, gitignored `.eidos/me.md` and **calibrates** it — what they own on this folder, their experience with the scope, and their technical capacity — with `eidos whoami`. Role sets the baseline; calibration tunes it per person.
+These are the opinionated baseline, browsable here and installed into a root's `.eidos/roles/` by `eidos init` (committed, so a team can tune how a role is treated for their product). Each person who works on the folder picks one in their local, gitignored `.eidos/me.md` and **calibrates** it — what they own on this folder, their experience with the scope, and their technical capacity — with `eidos whoami`. Role sets the baseline; calibration tunes it per person.
 
-- [Framework Owner](framework-owner.md) — holds intent, scope, and decisions.
 - [Developer](developer.md) — builds from the blueprints.
 - [Stakeholder](stakeholder.md) — reviews direction.
 - [Designer](designer.md) — shapes the experience.
