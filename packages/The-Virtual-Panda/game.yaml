@@ -1,0 +1,6 @@
+repo: The-Virtual-Panda/Eidos-Examples
+path: game
+ref: game/v0.1.0
+description: A video game, designed a mechanic and a level at a time; The Game (pillars, player, platform, scope, market), mechanics grouped by system, levels grouped by act, characters and enemies, items grouped by system, a one-pager, a cut list, a playtest log, an art bible, and a playtester role that sees only what is in the build.
+category: software/game
+keywords: [gdd, game-design, indie, godot, unity]
