@@ -1,7 +1,9 @@
 # A pull request that touches only packages/<owner>/ merges on its own when
 # the author is <owner> (or a public member of that organization) and the
 # checks pass. Anything else, categories.yaml above all, waits for the
-# Registry's owner.
+# Registry's owner. So does every plugin and plugin configuration, added,
+# changed, or removed: a plugin is code that runs on people's machines, and a
+# person reads each one before it is published, as Obsidian does.
 name: Auto-merge
 
 on:
@@ -47,6 +49,16 @@ jobs:
             echo "merge=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
           owner=$(echo "$owners" | tr -d '[:space:]')
+          shas=$(gh pr view "$NUMBER" --repo "$REPO" --json headRefOid,baseRefOid --jq '.headRefOid + " " + .baseRefOid')
+          for file in $files; do
+            for sha in $shas; do
+              kind=$(gh api "repos/$REPO/contents/$file?ref=$sha" --jq .content 2>/dev/null | base64 -d 2>/dev/null | sed -n 's/^kind:[[:space:]]*\([a-z]*\).*/\1/p')
+              if [ "$kind" = "plugin" ] || [ "$kind" = "config" ]; then
+                echo "waits for the owner: $file is a $kind, which a person reviews before it is published"
+                echo "merge=false" >> "$GITHUB_OUTPUT"; exit 0
+              fi
+            done
+          done
           if [ "$(echo "$author" | tr '[:upper:]' '[:lower:]')" = "$(echo "$owner" | tr '[:upper:]' '[:lower:]')" ]; then
             echo "merge=true" >> "$GITHUB_OUTPUT"; exit 0
           fi

@@ -1,7 +1,11 @@
 # Every pull request: each changed manifest is checked against the contract
 # (scripts/validate.mjs, with categories.yaml as changed in this pull
-# request), then its source is fetched at `ref` and `eidos check` runs on the
-# root at `path`. A root that fails the standard never merges.
+# request), then its source is fetched. A framework's or a configuration's
+# root is fetched at `ref` and `eidos check` runs on it at `path`; a
+# configuration's root must hold the settings of every plugin it names. A
+# plugin's newest version is downloaded from its GitHub release, each file
+# must match the sha256 the manifest pins, and `eidos plugin verify` loads it.
+# A root that fails the standard, or a plugin whose files differ, never merges.
 name: Validate
 
 on:
@@ -17,6 +21,9 @@ on:
 env:
   # The CLI release the Registry validates against. Move it on purpose.
   EIDOSMD_VERSION: '0.5.0'
+  # The CLI release that verifies plugins, the first with `eidos plugin
+  # verify`; empty until that release is published, so a plugin waits for it.
+  EIDOSMD_PLUGINS_VERSION: ''
 
 jobs:
   manifests:
@@ -72,6 +79,7 @@ jobs:
           node-version: 22
 
       - name: Fetch ${{ matrix.package.repo }} at ${{ matrix.package.ref }}
+        if: matrix.package.kind != 'plugin'
         run: |
           git clone --quiet --depth 1 --branch "${{ matrix.package.ref }}" \
             "https://github.com/${{ matrix.package.repo }}.git" source \
@@ -80,4 +88,42 @@ jobs:
             || { echo "::error::no .eidos/Framework.yaml under ${{ matrix.package.path }} in ${{ matrix.package.repo }} at ${{ matrix.package.ref }}"; exit 1; }
 
       - name: eidos check
+        if: matrix.package.kind != 'plugin'
         run: npx -y "eidosmd@${EIDOSMD_VERSION}" check --root "source/${{ matrix.package.path }}"
+
+      - name: The settings of each plugin the configuration names
+        if: matrix.package.kind == 'config'
+        env:
+          PLUGINS: ${{ toJson(matrix.package.plugins) }}
+        run: |
+          failed=0
+          for plugin in $(echo "$PLUGINS" | jq -r '.[]'); do
+            name=${plugin##*/}
+            file="source/${{ matrix.package.path }}/.eidos/plugins/$name/settings.yaml"
+            if [ ! -f "$file" ]; then echo "::error::no .eidos/plugins/$name/settings.yaml for $plugin"; failed=1; fi
+          done
+          exit $failed
+
+      - name: Download ${{ matrix.package.repo }} ${{ matrix.package.version }} and check its hashes
+        if: matrix.package.kind == 'plugin'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FILES: ${{ toJson(matrix.package.files) }}
+        run: |
+          mkdir release
+          failed=0
+          for file in $(echo "$FILES" | jq -r 'keys[]'); do
+            if ! gh release download "${{ matrix.package.ref }}" --repo "${{ matrix.package.repo }}" --pattern "$file" --dir release; then
+              echo "::error::the release at ${{ matrix.package.ref }} has no $file"; failed=1; continue
+            fi
+            pinned=$(echo "$FILES" | jq -r --arg f "$file" '.[$f]')
+            actual=$(sha256sum "release/$file" | cut -d' ' -f1)
+            if [ "$actual" != "$pinned" ]; then echo "::error::$file is $actual at ${{ matrix.package.ref }}, but the manifest pins $pinned"; failed=1; fi
+          done
+          exit $failed
+
+      - name: eidos plugin verify
+        if: matrix.package.kind == 'plugin'
+        run: |
+          if [ -z "$EIDOSMD_PLUGINS_VERSION" ]; then echo "::error::no eidosmd release verifies plugins yet; set EIDOSMD_PLUGINS_VERSION once one does"; exit 1; fi
+          npx -y "eidosmd@${EIDOSMD_PLUGINS_VERSION}" plugin verify release
