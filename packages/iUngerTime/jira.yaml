@@ -13,3 +13,8 @@ versions:
     files:
       manifest.yaml: 0cfffefc7ebc484957b881f2157695906b02d48fef85cae937f25e8df93fe1db
       cli.js: 9c835ba4ef5b47f80f9aa554a0382c9f54ca70b75cbcc813e619284655ce38eb
+  0.1.1:
+    ref: v0.1.1
+    files:
+      manifest.yaml: df7e977e938b48aef90cd9f7421a9c061a3344f4588abbfb5f3a2417f54baf25
+      cli.js: ac6e000537ae043f966d52dae75914faffe8e1a427554688d7a9ad9572fe84e2
