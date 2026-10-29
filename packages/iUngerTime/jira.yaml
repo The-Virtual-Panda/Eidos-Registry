@@ -1,12 +1,13 @@
 kind: plugin
 repo: iUngerTime/eidos-jira
-description: Pull a Jira Cloud board into the Backlog as tasks, with comments as threads
+description: Sync a Jira Cloud board with the Backlog, issues as tasks and comments as threads, your changes sent back one ticket at a time
 keywords:
   - jira
   - atlassian
   - backlog
   - issues
   - import
+  - sync
 versions:
   0.1.0:
     ref: v0.1.0
@@ -18,3 +19,10 @@ versions:
     files:
       manifest.yaml: df7e977e938b48aef90cd9f7421a9c061a3344f4588abbfb5f3a2417f54baf25
       cli.js: ac6e000537ae043f966d52dae75914faffe8e1a427554688d7a9ad9572fe84e2
+  0.2.0:
+    ref: v0.2.0
+    files:
+      manifest.yaml: a2c8dc4fa9a70b86429dcb8a9b17f7d15c0f0b3d1bd24fe542b315b65c1f6ddd
+      cli.js: 0d517ca3167927322f9fb59a7f7a7386b108cf7bb912c2e1b162e97b10392a8d
+      app.js: 205ee2112a278b42be4d53b42958577f149897b02647631b5c7bd8f216b50144
+      page.js: ccec6d186de987420a38241249c4689dffde117442d0342390b001d331fa5b77
