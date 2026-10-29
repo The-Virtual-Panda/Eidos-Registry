@@ -127,3 +127,15 @@ jobs:
         run: |
           if [ -z "$EIDOSMD_PLUGINS_VERSION" ]; then echo "::error::no eidosmd release verifies plugins yet; set EIDOSMD_PLUGINS_VERSION once one does"; exit 1; fi
           npx -y "eidosmd@${EIDOSMD_PLUGINS_VERSION}" plugin verify release
+
+      # The newest eidosmd release too, so a reviewer sees a plugin it breaks
+      # before people install it. A warning on the pull request, never a
+      # failure: a plugin merges on the release pinned above.
+      - name: eidos plugin verify on the newest eidosmd
+        if: matrix.package.kind == 'plugin'
+        run: |
+          newest=$(npm view eidosmd version)
+          if [ "$newest" = "$EIDOSMD_PLUGINS_VERSION" ]; then echo "eidosmd $newest is the release pinned above"; exit 0; fi
+          if ! npx -y "eidosmd@${newest}" plugin verify release; then
+            echo "::warning::eidosmd $newest, the newest release, does not load this plugin; it still merges, verified on $EIDOSMD_PLUGINS_VERSION"
+          fi

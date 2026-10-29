@@ -36,7 +36,7 @@ versions:
   1.2.0:
     ref: v1.2.0                           # the tag of the GitHub release
     files:                                # each release file and its sha256
-      manifest.yaml: 3f1c…                # the plugin's manifest, with its name and min_host
+      manifest.yaml: 3f1c…                # the plugin's manifest: its name, min_host, and built_with
       cli.js: 9a0b…                       # its CLI entry, bundled, eidosmd/plugin left external
       app.js: 51de…                       # its app entry, when it has one
       page.js: c07e…                      # its page half, when it has one
@@ -72,7 +72,7 @@ plugins: [backlog, "@alice/pomodoro"]     # whose settings it offers: a core plu
 
 1. Tag the commit of your repository that holds the root you want published. For a plugin, make a GitHub release at the tag with its built files attached.
 2. Add or change `packages/<owner>/<name>.yaml` in a pull request here. `eidos publish` writes it for you from a clean, tagged root or a built plugin (with each file's sha256) and opens the pull request with `gh`; without `gh` it prints the manifest and the URL.
-3. CI validates the manifest. For a framework or a configuration it fetches your repository at `ref` and runs `eidos check` on the root at `path`, and a configuration's root must hold the settings of every plugin it names. For a plugin it downloads the newest version's release files, fails on any whose sha256 differs from the manifest, and loads the plugin with `eidos plugin verify`. Errors fail the pull request with the report.
+3. CI validates the manifest. For a framework or a configuration it fetches your repository at `ref` and runs `eidos check` on the root at `path`, and a configuration's root must hold the settings of every plugin it names. For a plugin it downloads the newest version's release files, fails on any whose sha256 differs from the manifest, and loads the plugin with `eidos plugin verify`, then loads it again on the newest eidosmd release, where a failure is a warning that does not stop the merge. Errors fail the pull request with the report.
 4. A framework merges on its own when you are the owner of the repository (or a public member of the organization that is), the change stays inside `packages/<owner>/`, and the checks pass. A plugin or a configuration, added, changed, or removed, always waits for the Registry's owner to read it: a plugin is code that runs on other people's machines. The merge is the moment of publication.
 
 A framework's or a configuration's version bump is the same pull request with a new `ref`; a plugin's adds an entry under `versions`. A package whose source can no longer be fetched at its ref is left out of the site at its next build; its manifest stays until a pull request removes it.
