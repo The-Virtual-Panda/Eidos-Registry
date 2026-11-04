@@ -21,9 +21,10 @@ on:
 env:
   # The CLI release the Registry validates against. Move it on purpose.
   EIDOSMD_VERSION: '0.5.0'
-  # The CLI release that verifies plugins, the first with `eidos plugin
-  # verify`; empty until that release is published, so a plugin waits for it.
-  EIDOSMD_PLUGINS_VERSION: '0.16.1'
+  # The CLI release that verifies plugins, installed as a person installs it,
+  # since the npm package no longer carries the `eidos` command. A plugin whose
+  # min_host is newer waits until this moves. Move it on purpose.
+  EIDOSMD_PLUGINS_VERSION: '0.18.0'
 
 jobs:
   manifests:
@@ -126,7 +127,8 @@ jobs:
         if: matrix.package.kind == 'plugin'
         run: |
           if [ -z "$EIDOSMD_PLUGINS_VERSION" ]; then echo "::error::no eidosmd release verifies plugins yet; set EIDOSMD_PLUGINS_VERSION once one does"; exit 1; fi
-          npx -y "eidosmd@${EIDOSMD_PLUGINS_VERSION}" plugin verify release
+          curl -fsSL https://eidosmd.com/install | EIDOS_VERSION="$EIDOSMD_PLUGINS_VERSION" EIDOS_INSTALL_DIR="$RUNNER_TEMP/eidos-pinned" sh
+          EIDOS_NO_TELEMETRY=1 "$RUNNER_TEMP/eidos-pinned/eidos" plugin verify release
 
       # The newest eidosmd release too, so a reviewer sees a plugin it breaks
       # before people install it. A warning on the pull request, never a
@@ -136,6 +138,7 @@ jobs:
         run: |
           newest=$(npm view eidosmd version)
           if [ "$newest" = "$EIDOSMD_PLUGINS_VERSION" ]; then echo "eidosmd $newest is the release pinned above"; exit 0; fi
-          if ! npx -y "eidosmd@${newest}" plugin verify release; then
+          curl -fsSL https://eidosmd.com/install | EIDOS_VERSION="$newest" EIDOS_INSTALL_DIR="$RUNNER_TEMP/eidos-newest" sh
+          if ! EIDOS_NO_TELEMETRY=1 "$RUNNER_TEMP/eidos-newest/eidos" plugin verify release; then
             echo "::warning::eidosmd $newest, the newest release, does not load this plugin; it still merges, verified on $EIDOSMD_PLUGINS_VERSION"
           fi
