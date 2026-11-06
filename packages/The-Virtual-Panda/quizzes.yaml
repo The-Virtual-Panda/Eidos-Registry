@@ -13,10 +13,10 @@ keywords:
   - scores
   - wiki
 versions:
-  0.1.0:
-    ref: v0.1.0
+  0.1.1:
+    ref: v0.1.1
     files:
-      manifest.yaml: 65e783d46841a6d31e6a75e842474c3d6d360e6694ac37f73a8e1f8737a5d2d9
+      manifest.yaml: cd3ad8babbe846c8489e820c41f027c05b8b039aff51305c293cafc10d01cc13
       cli.js: 9c94daee47a4e66cca098cca399efd141bdb4aae973b2476c674ea2bc19c9904
       app.js: 6a81a29518077bb84a2f8989eae5b840d0d52f200c18e05830d05588305ad58e
-      page.js: 413f4c66a5e135066308f6f158e1aaef7e17729132c2102a617018aa5ccc2ccb
+      page.js: db4684120ba2c7d01a919d3fb194ab2a8bcdd35bc3f0bd1f691acb4edcac4892
