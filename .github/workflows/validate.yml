@@ -24,7 +24,7 @@ env:
   # The CLI release that verifies plugins, installed as a person installs it,
   # since the npm package no longer carries the `eidos` command. A plugin whose
   # min_host is newer waits until this moves. Move it on purpose.
-  EIDOSMD_PLUGINS_VERSION: '0.18.0'
+  EIDOSMD_PLUGINS_VERSION: '0.21.0'
 
 jobs:
   manifests:
