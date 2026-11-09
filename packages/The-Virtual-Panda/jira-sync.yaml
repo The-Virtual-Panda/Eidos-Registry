@@ -1,0 +1,18 @@
+kind: plugin
+repo: The-Virtual-Panda/eidos-jira-sync
+description: Sync a Jira Cloud board with the Backlog, issues as tasks and comments as threads, your changes sent back one ticket at a time
+keywords:
+  - jira
+  - atlassian
+  - backlog
+  - issues
+  - import
+  - sync
+versions:
+  0.5.0:
+    ref: v0.5.0
+    files:
+      manifest.yaml: 15851174cee7327a39f35dbc6ed2691b45d831674cacf76b2c603665523e4083
+      cli.js: 16991b3079936ff6517f05b0f6ca88b0fdf290a395d3bbf230b261d1863411db
+      app.js: 38b8c983875d16933702f7d3e922a40643d8f16c8fd5495a5d27f5e8bea67db4
+      page.js: 52335d63c6f5cdeaff1e5482e8fa480978f813d2b99bad18035c50b1f450fbcb
