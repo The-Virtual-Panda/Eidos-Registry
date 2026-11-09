@@ -1,10 +1,10 @@
 # The framework document: the structure this root is written in, in one place. The version and naming
-# convention, the top-level documents, the collections (with their variants and grouping), the Properties
+# convention, the top-level documents, the collections (with their variants and folders), the Properties
 # table, the Vocabulary, and, once blueprints exist, the generated index. The visible
 # README.md at the root is the friendly door to it; keep it current with the `eidos` CLI.
 
 # The Eidos version this framework targets; migrate reads and bumps it.
-eidos_version: 5.5.0
+eidos_version: 5.13.0
 
 # How files, folders, and links are named: kebab-case | TitleCase | Title Case. Absent = kebab-case. It
 # governs the whole root and changing it later means renaming files, so it is settled at install.
@@ -20,9 +20,9 @@ top_level:
     description: "the root's front door: what this is, and pointers in."
 
 # A collection is a top-level folder of repeated blueprints that share a body template. frames holds
-# the framing docs, what the root says first about the product, and specs the product's units. Add
+# the framing docs, what the project says first about the product, and specs the product's units. Add
 # more with the `eidos` CLI. Each declares its variants (one default; each a template file named
-# <unit>.<variant>.md under templates/, the unit being the word for one of its blueprints) and its grouping.
+# <unit>.<variant>.md under templates/, the unit being the word for one of its blueprints) and may declare its folders.
 folders:
   # This framework's framing collection: the docs that set what every other blueprint is judged
   # against. Each frame follows the variant of its kind, and one left unwritten is a gap to surface,
@@ -41,13 +41,11 @@ folders:
     variants:
       - { name: full, template: templates/spec.full.md, description: "the complete spec template", default: true }
       - { name: micro, template: templates/spec.micro.md, description: "Intent, Open Questions, ACs, Out of Scope; grow into full" }
-    grouping:
-      label: Domains
-      property: domain
-      # One entry per domain, a name and a short description, as they accrue.
-      groups:
-        - name: example
-          description: "one example group, so the fixture has a grouped collection"
+    label: Domains
+    folder_property: domain
+    folders:
+      - name: example
+        description: "one example group, so the fixture has a grouped collection"
 
 # The property contract: what a blueprint's frontmatter may carry, across every collection. One block
 # per owner: the core properties Eidos's own machinery uses, the custom ones you (or the seed) add, and
@@ -64,7 +62,7 @@ properties:
     - { name: id, type: Text, required: true, meaning: "Stable, unique identity, in any form. Assigned once, never changed." }
     - { name: title, type: Text, required: true, meaning: Human-readable name. }
     - { name: summary, type: Text, meaning: "One line: what this blueprint is. Feeds the index; absent, the index flags it." }
-    - { name: variant, type: Text, meaning: "Which variant this blueprint follows. Absent = its group's default, else the collection's." }
+    - { name: variant, type: Text, meaning: "Which variant this blueprint follows. Absent = the nearest default on its folder's path, else the collection's." }
   # Yours to shape with the `eidos` CLI. The seed ships a few useful defaults; keep, scope, or drop any of
   # them, Eidos doesn't depend on them. Absence where a property applies is a soft gap a check notes,
   # never refuses.
@@ -97,7 +95,7 @@ properties:
     - { name: date_created, type: Date, applies_to: all, meaning: "YYYY-MM-DD. The day the blueprint was first written. Set once." }
     - { name: date_modified, type: Date, applies_to: all, meaning: "YYYY-MM-DD. The day the blueprint was last changed." }
     - { name: tags, type: List, applies_to: all, meaning: "Free tags." }
-    - { name: domain, type: Text, applies_to: [ specs ], meaning: "The grouping, matching the blueprint's sub-folder under its collection in the naming convention. An unknown value warns, never fails." }
+    - { name: domain, type: Text, applies_to: [ specs ], meaning: "The folder: the path of the blueprint's folder in its collection, such as a/b. A value that is not its folder warns, never fails." }
     - { name: depends_on, type: List, applies_to: [ specs ], meaning: "Blueprints this one needs, each a markdown link. An implementation dependency." }
     - name: type
       type: Text
