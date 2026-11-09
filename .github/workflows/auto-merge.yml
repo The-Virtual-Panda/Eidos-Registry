@@ -42,8 +42,8 @@ jobs:
         run: |
           author=$(gh pr view "$NUMBER" --repo "$REPO" --json author --jq .author.login)
           files=$(gh pr view "$NUMBER" --repo "$REPO" --json files --jq '.files[].path')
-          owners=$(echo "$files" | sed -n 's#^packages/\([^/]*\)/[^/]*\.yaml$#\1#p' | sort -u)
-          outside=$(echo "$files" | grep -v '^packages/[^/]*/[^/]*\.yaml$' || true)
+          owners=$(echo "$files" | sed -n 's#^packages/\([^/]*\)/\(plugins/\)\{0,1\}[^/]*\.yaml$#\1#p' | sort -u)
+          outside=$(echo "$files" | grep -v '^packages/[^/]*/\(plugins/\)\{0,1\}[^/]*\.yaml$' || true)
           if [ -n "$outside" ] || [ "$(echo "$owners" | wc -l)" -ne 1 ] || [ -z "$owners" ]; then
             echo "waits for the owner: touches more than one owner's folder, or files outside packages/"
             echo "merge=false" >> "$GITHUB_OUTPUT"; exit 0
