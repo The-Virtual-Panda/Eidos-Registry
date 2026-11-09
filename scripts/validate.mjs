@@ -7,6 +7,13 @@
 // Usage: node scripts/validate.mjs [--json] [packages/<owner>/<name>.yaml ...]
 // With no paths, every manifest under packages/ is validated; a plugin's name
 // and a configuration's plugins are always checked against every manifest.
+//
+// A framework or a configuration lives at packages/<owner>/<name>.yaml, and a
+// plugin at packages/<owner>/plugins/<name>.yaml, so an owner can publish a
+// framework and a plugin under one @owner/name: a name is unique within its
+// owner and its kind. A plugin listed beside the frameworks before plugins had
+// their own folder stays valid there, where older CLIs read it, and its name
+// then holds no plugin in the plugins/ folder.
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
@@ -26,6 +33,8 @@ const SHA256 = /^[0-9a-f]{64}$/;
 // entry and its page half when it has them.
 const PLUGIN_FILES = { required: ['manifest.yaml', 'cli.js'], optional: ['app.js', 'page.js'] };
 const PACKAGE = /^@([^/]+)\/([^/]+)$/;
+// packages/<owner>/<name>.yaml for any kind, packages/<owner>/plugins/<name>.yaml for a plugin
+const MANIFEST_PATH = /^packages\/([^/]+)\/(plugins\/)?([^/]+)\.yaml$/;
 
 const semverOrder = (a, b) => {
   const [x, y] = [a, b].map((v) => v.split(/[.-]/).slice(0, 3).map(Number));
@@ -52,29 +61,32 @@ const categories = new Set(
 const files = given.length > 0 ? given : walk('packages');
 
 // Every manifest's kind, so a plugin's name is checked unique and a
-// configuration's plugins resolved whichever files were given.
-const kindOf = new Map();
+// configuration's plugins resolved whichever files were given. A name may
+// hold a framework or a configuration and a plugin at once, so each is kept.
+const listings = [];
 for (const file of walk('packages')) {
   const rel = path.relative('.', file).split(path.sep).join('/');
-  const match = rel.match(/^packages\/([^/]+)\/([^/]+)\.yaml$/);
+  const match = rel.match(MANIFEST_PATH);
   if (!match) continue;
   try {
-    kindOf.set(`@${match[1]}/${match[2]}`, parse(readFileSync(file, 'utf8'))?.kind ?? 'framework');
+    listings.push({ id: `@${match[1]}/${match[3]}`, file: rel, kind: parse(readFileSync(file, 'utf8'))?.kind ?? 'framework' });
   } catch {
     // reported when the file itself is validated
   }
 }
+const isPlugin = (id) => listings.some((listing) => listing.id === id && listing.kind === 'plugin');
+// a plugin's name is one across the Registry, since a root holds one plugin of a name
 const pluginNames = new Map();
-for (const [id, kind] of kindOf) if (kind === 'plugin') pluginNames.set(id.split('/')[1], [...(pluginNames.get(id.split('/')[1]) ?? []), id]);
+for (const { id, file, kind } of listings) if (kind === 'plugin') pluginNames.set(id.split('/')[1], [...(pluginNames.get(id.split('/')[1]) ?? []), { id, file }]);
 
 let failed = false;
 const valid = [];
 for (const file of files) {
   const problems = [];
   const rel = path.relative('.', file).split(path.sep).join('/');
-  const match = rel.match(/^packages\/([^/]+)\/([^/]+)\.yaml$/);
-  if (!match) problems.push('a manifest lives at packages/<owner>/<name>.yaml');
-  const [, owner, name] = match ?? [];
+  const match = rel.match(MANIFEST_PATH);
+  if (!match) problems.push('a manifest lives at packages/<owner>/<name>.yaml, or a plugin at packages/<owner>/plugins/<name>.yaml');
+  const [, owner, pluginFolder, name] = match ?? [];
 
   let manifest;
   try {
@@ -84,6 +96,7 @@ for (const file of files) {
   }
   const kind = manifest && typeof manifest === 'object' ? (manifest.kind ?? 'framework') : null;
   if (kind !== null && !(kind in KINDS)) problems.push(`\`kind\` is framework, config, or plugin`);
+  else if (pluginFolder && kind !== null && kind !== 'plugin') problems.push(`a plugins/ folder holds plugin listings alone; a ${kind} lives at packages/${owner}/${name}.yaml`);
   else if (manifest && typeof manifest === 'object') {
     const { required, optional } = KINDS[kind];
     const strings = required.filter((key) => !['plugins', 'versions'].includes(key));
@@ -97,12 +110,13 @@ for (const file of files) {
         for (const plugin of manifest.plugins) {
           const listed = plugin.match(PACKAGE);
           if (listed) {
-            if (kindOf.get(plugin) !== 'plugin') problems.push(`\`${plugin}\` is not a plugin in the Registry`);
+            if (!isPlugin(plugin)) problems.push(`\`${plugin}\` is not a plugin in the Registry`);
           } else if (!KEBAB.test(plugin)) problems.push(`\`${plugin}\` is a core plugin's name or a plugin's @owner/name`);
         }
     }
     if (kind === 'plugin') {
-      if (name && (pluginNames.get(name) ?? []).length > 1) problems.push(`the plugin name \`${name}\` is published by ${pluginNames.get(name).join(' and ')}; a root holds one plugin of a name`);
+      const holders = pluginNames.get(name) ?? [];
+      if (name && holders.length > 1) problems.push(`the plugin name \`${name}\` is listed at ${holders.map((holder) => holder.file).join(' and ')}; a root holds one plugin of a name`);
       const versions = manifest.versions;
       if (!versions || typeof versions !== 'object' || Array.isArray(versions) || Object.keys(versions).length === 0) problems.push('`versions` maps each published version to its `ref` and `files`');
       else

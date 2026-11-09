@@ -18,14 +18,14 @@ keywords: [fixture, ci]                  # optional
 ```
 
 - `<owner>` is the owner of `repo`. A manifest under another owner's folder fails CI.
-- `<name>` is kebab-case and unique within its owner: the repository's name when it publishes one root, the author's choice when it publishes several.
+- `<name>` is kebab-case and unique within its owner and its kind: the repository's name when it publishes one root, the author's choice when it publishes several. A framework or a configuration and a plugin may share one, since a plugin is listed in a folder of its own.
 - The package's name everywhere is `@<owner>/<name>`. There is no short form.
 - A package has one `ref`, the latest. Earlier versions are the framework's own record at that ref, so `@owner/name@<version>` resolves through the framework, never through the manifest.
 - The package's contents are read from `<repo>/<path>/.eidos/Framework.yaml` at `ref`. Nothing about them is declared here.
 
 ## A plugin
 
-A plugin from outside `eidosmd` is published the way Obsidian publishes one: the author builds it and attaches the built files to a GitHub release, and the manifest here points at that release and pins each file's sha256.
+A plugin from outside `eidosmd` is published the way Obsidian publishes one: the author builds it and attaches the built files to a GitHub release, and the manifest here points at that release and pins each file's sha256. Its file is `packages/<owner>/plugins/<name>.yaml`, in a folder of its own, so an owner can publish a framework and the plugin that goes with it under one name: `eidos install @owner/name` installs the framework, and `eidos plugin install @owner/name` the plugin.
 
 ```yaml
 kind: plugin
@@ -46,6 +46,7 @@ versions:
 - Every version stays listed, so a root that names an older one installs exactly what it named. The newest is the highest version.
 - `eidos plugin install @owner/name[@version]` downloads that version's files and refuses any whose sha256 differs from the manifest, so a moved tag or a replaced release file never reaches anyone. A plugin then runs only once a person on that machine allows it.
 - A plugin has no category; its keywords carry what it is for.
+- A plugin listed before plugins had their own folder stays at `packages/<owner>/<name>.yaml`, where older versions of `eidosmd` read it, and a new version of it is published there. Its name then holds no framework or configuration.
 
 ## A plugin configuration
 
@@ -71,7 +72,7 @@ plugins: [backlog, "@alice/pomodoro"]     # whose settings it offers: a core plu
 ## Publishing
 
 1. Tag the commit of your repository that holds the root you want published. For a plugin, make a GitHub release at the tag with its built files attached.
-2. Add or change `packages/<owner>/<name>.yaml` in a pull request here. `eidos publish` writes it for you from a clean, tagged root or a built plugin (with each file's sha256) and opens the pull request with `gh`; without `gh` it prints the manifest and the URL.
+2. Add or change `packages/<owner>/<name>.yaml` (a plugin's `packages/<owner>/plugins/<name>.yaml`) in a pull request here. `eidos publish` writes it for you from a clean, tagged root or a built plugin (with each file's sha256) and opens the pull request with `gh`; without `gh` it prints the manifest and the URL.
 3. CI validates the manifest. For a framework or a configuration it fetches your repository at `ref` and runs `eidos check` on the root at `path`, and a configuration's root must hold the settings of every plugin it names. For a plugin it downloads the newest version's release files, fails on any whose sha256 differs from the manifest, and loads the plugin with `eidos plugin verify`, then loads it again on the newest eidosmd release, where a failure is a warning that does not stop the merge. Errors fail the pull request with the report.
 4. A framework merges on its own when you are the owner of the repository (or a public member of the organization that is), the change stays inside `packages/<owner>/`, and the checks pass. A plugin or a configuration, added, changed, or removed, always waits for the Registry's owner to read it: a plugin is code that runs on other people's machines. The merge is the moment of publication.
 
