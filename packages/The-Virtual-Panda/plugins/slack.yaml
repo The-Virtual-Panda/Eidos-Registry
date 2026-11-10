@@ -1,0 +1,18 @@
+kind: plugin
+repo: The-Virtual-Panda/eidos-publish
+description: Publish a blueprint or a top-level doc to a Slack channel as one message, edited in place when the file changes, and only when you ask
+keywords:
+  - slack
+  - publish
+  - share
+  - chat
+  - messages
+  - updates
+versions:
+  0.1.0:
+    ref: slack-v0.1.0
+    files:
+      manifest.yaml: fdd06cea64eb4cc344dc5b5de092dc285ed35ffddfcf757fef4f2e2c65f55912
+      cli.js: 892c0a49fb8e919088eb663c8ca8b38773cc504d57230ba40384e0e64f8b81df
+      app.js: 879a5348c63d7f8b8c98a0ed4dc1194f1697fea8f318a9675fee10621deaad72
+      page.js: 39787c6ee9cdba6a067f15d5ba850495724f13220feb9b8c40c07d6e288ac470
