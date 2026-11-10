@@ -126,7 +126,10 @@ for (const file of files) {
             problems.push(`version \`${version}\` is a mapping of \`ref\` and \`files\``);
             continue;
           }
-          for (const key of Object.keys(entry)) if (!['ref', 'files'].includes(key)) problems.push(`version \`${version}\`: unknown key \`${key}\``);
+          for (const key of Object.keys(entry)) if (!['ref', 'files', 'guest'].includes(key)) problems.push(`version \`${version}\`: unknown key \`${key}\``);
+          // the view a public share link draws, beside the files and never in them: eidosmd through 0.22 refuses a whole
+          // listing whose files name one it does not know
+          if ('guest' in entry && (typeof entry.guest !== 'string' || !SHA256.test(entry.guest))) problems.push(`version \`${version}\`: \`guest\` is the sha256 of its guest.js, 64 lowercase hex characters`);
           if (typeof entry.ref !== 'string' || entry.ref === '') problems.push(`version \`${version}\`: \`ref\` is the tag of its GitHub release`);
           const given = entry.files && typeof entry.files === 'object' ? entry.files : null;
           if (!given) problems.push(`version \`${version}\`: \`files\` maps each release file to its sha256`);

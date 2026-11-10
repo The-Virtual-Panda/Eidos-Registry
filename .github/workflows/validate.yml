@@ -4,7 +4,8 @@
 # root is fetched at `ref` and `eidos check` runs on it at `path`; a
 # configuration's root must hold the settings of every plugin it names. A
 # plugin's newest version is downloaded from its GitHub release, each file
-# must match the sha256 the manifest pins, and `eidos plugin verify` loads it.
+# (and its guest.js, where it lists a `guest`) must match the sha256 the
+# manifest pins, and `eidos plugin verify` loads it.
 # A root that fails the standard, or a plugin whose files differ, never merges.
 name: Validate
 
@@ -110,9 +111,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           FILES: ${{ toJson(matrix.package.files) }}
+          GUEST: ${{ matrix.package.guest }}
         run: |
           mkdir release
           failed=0
+          # guest.js, the view a public share link draws, is listed as `guest` beside the files, never in them
+          if [ -n "$GUEST" ]; then FILES=$(echo "$FILES" | jq -c --arg sha "$GUEST" '. + {"guest.js": $sha}'); fi
           for file in $(echo "$FILES" | jq -r 'keys[]'); do
             if ! gh release download "${{ matrix.package.ref }}" --repo "${{ matrix.package.repo }}" --pattern "$file" --dir release; then
               echo "::error::the release at ${{ matrix.package.ref }} has no $file"; failed=1; continue
