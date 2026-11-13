@@ -1,6 +1,6 @@
 repo: The-Virtual-Panda/Eidos-Examples
 path: academy
-ref: academy/v0.5.0
-description: A school of courses, learner first; The School (mission, how we teach, market, production), learner personas, courses grouped by track, paths, and a catalog.
+ref: academy/v0.6.0
+description: A school of courses, learner first, with the Academy plugin installed; The School (mission, how we teach, market, production), learner personas, tracks that nest courses and their lessons with a quiz on each lesson of a Welcome course, paths, learning outcomes and decisions as records, a production backlog, and a curriculum map.
 category: knowledge/course
 keywords: [courses, curriculum, learners, instructor]
