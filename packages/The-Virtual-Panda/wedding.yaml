@@ -1,6 +1,6 @@
 repo: The-Virtual-Panda/Eidos-Examples
 path: wedding
-ref: wedding/v0.5.0
-description: A wedding planned as its run of show; The Big Picture (vision, guests, venue, budget), moments grouped by day, vendors grouped by category, and the timeline and day-of contacts on one page each.
+ref: wedding/v0.6.0
+description: A wedding planned as its run of show; The Big Picture (vision, guests, venue, budget), moments nested by day and event, vendors by category, decisions as signed-off records, a checklist of tasks by months out, a run-of-show canvas, and a wedding party role.
 category: experience/event
 keywords: [wedding, event, planning, run-of-show, vendors]
