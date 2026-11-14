@@ -1,7 +1,7 @@
 kind: plugin
 repo: iUngerTime/eidos-bible
 description: Import a public-domain Bible translation into an empty collection, a blueprint per chapter and an H6 per verse, so study notes link to any verse or range
-keywords: [bible, scripture, import, study]
+keywords: [bible, scripture, import, study, spanish, portuguese]
 versions:
   0.1.0:
     ref: v0.1.0
@@ -10,3 +10,10 @@ versions:
       cli.js: 4e103433c5afa74a1554287bd78a000beab1b8c4b0bdf73bf781a29ea75b9f7c
       app.js: 8bc41dc49f2dfdca5ea1d190627a18dc370802ae8c9a25b5bd66b3bcd3b77a64
       page.js: a46286b929bdc9716293551dd52a98e8584e7d3c84571941e986b700550e1fdd
+  0.2.0:
+    ref: v0.2.0
+    files:
+      manifest.yaml: daed2e56f6a80aaf60c37ecf8e601e7e5b54253904d2dac70194713ec12f0dd5
+      cli.js: bfcf112c969ab1e65bc20ed55cd8a3d420fdbb158b636b9273184695f5bd0238
+      app.js: d5ec4e21675e9e407df712010825b00f5e4367841f251a0674020143f2c762e7
+      page.js: 33684b29730dfa4f46293aebeab6b695e57dc378da52987a348b2e9dae7ebaab
