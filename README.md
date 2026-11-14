@@ -20,7 +20,7 @@ keywords: [fixture, ci]                  # optional
 - `<owner>` is the owner of `repo`. A manifest under another owner's folder fails CI.
 - `<name>` is kebab-case and unique within its owner and its kind: the repository's name when it publishes one root, the author's choice when it publishes several. A framework or a configuration and a plugin may share one, since a plugin is listed in a folder of its own.
 - The package's name everywhere is `@<owner>/<name>`. There is no short form.
-- A package has one `ref`, the latest. Earlier versions are the framework's own record at that ref, so `@owner/name@<version>` resolves through the framework, never through the manifest.
+- A package has one `ref`, the latest. Earlier versions are the framework repository's tags beside it, the same prefix before each version (`academy/v0.6.0` makes `@owner/academy@0.5.0` the tag `academy/v0.5.0`), so `@owner/name@<version>` resolves through the framework's tags, never through the manifest. A `ref` that is no version (a branch, a commit) has none.
 - The package's contents are read from `<repo>/<path>/.eidos/Framework.yaml` at `ref`. Nothing about them is declared here.
 
 ## A plugin
