@@ -55,3 +55,11 @@ versions:
       app.js: 0ef7163a2b8b4a77f8a6d84a30aa7ed37ea6946fe77cb93da39efb1b37eec9b7
       page.js: b485d695b9f5c9d63436ab06ef3bd2e54ee96c6679ada68f06ca23a82948be2c
     guest: 73c5adb096d12ac14da064637d88f919bf43d7f3fc2eb0dda19b27082ab2a5bf
+  0.5.2:
+    ref: v0.5.2
+    files:
+      manifest.yaml: 3b3bd4f2f901e32dd924825aa9ca5bb8ef76cc6780f17684c1f6eb4d1ab6d349
+      cli.js: 42808effcfb32e01a0b8634e1ae962172ebe08527d7b4b76c26a0d878ad41744
+      app.js: 0ef7163a2b8b4a77f8a6d84a30aa7ed37ea6946fe77cb93da39efb1b37eec9b7
+      page.js: b3f7c6f37766d4a488255625a32c8b9d761947150fe97ceb6a58fa9b4ef735d6
+    guest: 73c5adb096d12ac14da064637d88f919bf43d7f3fc2eb0dda19b27082ab2a5bf
